@@ -31,22 +31,42 @@ namespace SwipeKeyboard
         private GameObject currentKey = null;
 
         private bool isMouseDown = false;
-
+        private bool isReadyToFirstPress = true;
+        private bool isfirstPressed;
+        public int timeStep;
         private MatchSwipeType swipeType;
+
+        private SpellChecker spellChecker;
 
         void Start()
         {
-            swipeType = new MatchSwipeType(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishDictionary.txt"));
+            //swipeType = new MatchSwipeType(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishDictionary.txt"));
+
+            spellChecker = new SpellChecker();
 
             CalculateMouseDalta();
 
             lineTrailAnimation.CreateTrailObject();
         }
-        
+        private void Update()
+        {
+            CalculateMouseDalta();
+
+            if (Input.GetButtonUp("Fire1"))
+            {
+                timeStep = 0;
+                isMouseDown = false;
+                isfirstPressed = false;
+                isReadyToFirstPress = true;
+
+            }
+
+            
+        }
 
         void FixedUpdate()
         {
-            CalculateMouseDalta();
+            
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -60,49 +80,47 @@ namespace SwipeKeyboard
                     if (button != null)
                     {
                         if (mouseDelta.sqrMagnitude < sensitivity)
-                            if ((currentKey != button.buttonObject) || !isMouseDown)
+                        {
+
+                            if (timeStep % 30 == 0)
                             {
-                                keysAnimation.AddSelectedImage(button.buttonObject.transform.gameObject.GetComponent<Image>());
-
-                                if (button.isCommandButton)
+                                if (isfirstPressed == true)
                                 {
-                                    string keyValue = button.buttonValue;//.transform.gameObject.GetComponent<KeyControl>().keyValue;
-                                    switch (keyValue)
-                                    {
-                                        case "backspace":
-                                            inputString.RemoveFromEnd(1);
-                                            textBox.text = inputString.text;
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    inputString.Add(button.buttonValue);
-
-                                    textBox.text = inputString.text;
-
-                                    if (button.buttonValue == " ")
-                                    {
-                                        keyboardHints.RemoveAll();
-                                    }
-                                    else
-                                    {
-                                        string[] suggestionWords = GetSuggestionWords(inputString.lastWord, 3);
-                                        if(suggestionWords.Length > 0 && suggestionWords[0] != "")
-                                        {
-                                            keyboardHints.Create(suggestionWords.Length);//Изменить
-                                            keyboardHints.SetHintTexts(suggestionWords);
-                                        }
-                                        
-                                    }
-
-                                    
+                                    isReadyToFirstPress = false;
                                 }
 
-                                currentKey = hit.transform.gameObject;
-                                isMouseDown = true;
+                                timeStep = 0;
+
+
+
+
+                                ButtonPress(button);
+
+                                isfirstPressed = true;
+
                             }
+
+                            /*
+                            if (currentKey != button.buttonObject)
+                            {
+                                isfirstPressed = false;
+                                isReadyToFirstPress = true;
+                            }
+                            */
+                            // currentKey = hit.transform.gameObject;
+
+                            if (isfirstPressed == true && isReadyToFirstPress == true)
+                            {
+                                timeStep++;
+                            }
+                            else
+                            {
+                                timeStep += 10;
+                            }
+
+                        }
                     }
+
                     else if (keyboardHints.GetHintIndex(hit.transform.gameObject) != -1)
                     {
                         if (mouseDelta.sqrMagnitude < sensitivity)
@@ -115,15 +133,60 @@ namespace SwipeKeyboard
                                 keyboardHints.RemoveAll();
                             }
                     }
-
+                    else
+                    {
+                        isfirstPressed = false;
+                        isReadyToFirstPress = true;
+                        timeStep = 0;
+                    }
                 }
             }
-            if (Input.GetButtonUp("Fire1")) isMouseDown = false;
+
+           
 
             lineTrailAnimation.UpdateTrailPosition();
             keysAnimation.UpdateSelectedImages();
         }
+        private void ButtonPress(KeyboardButton button)
+        {
+            keysAnimation.AddSelectedImage(button.buttonObject.transform.gameObject.GetComponent<Image>());
 
+            if (button.isCommandButton)
+            {
+                string keyValue = button.buttonValue; //.transform.gameObject.GetComponent<KeyControl>().keyValue;
+                switch (keyValue)
+                {
+                    case "backspace":
+                        inputString.RemoveFromEnd(1);
+                        textBox.text = inputString.text;
+                        break;
+                }
+            }
+            else
+            {
+
+                if (button.buttonValue == " ")
+                {
+                    keyboardHints.RemoveAll();
+                    inputString.AddWord(spellChecker.Correct(inputString.lastWord));
+                    //Debug.Log(spellChecker.Correct(inputString.lastWord));
+                }
+                else
+                {
+                    /*
+                    string[] suggestionWords = GetSuggestionWords(inputString.lastWord, 3);
+                    if(suggestionWords.Length > 0 && suggestionWords[0] != "")
+                    {
+                        keyboardHints.Create(suggestionWords.Length);//Изменить
+                        keyboardHints.SetHintTexts(suggestionWords);
+                    }
+                   */
+                }
+                inputString.Add(button.buttonValue);
+                textBox.text = inputString.text;
+
+            }
+        }
         private void CalculateMouseDalta()
         {
             mouseDelta = oldMousePosition - Input.mousePosition;
@@ -398,7 +461,5 @@ namespace SwipeKeyboard
 
     }
 
-    
-    
 }
 
