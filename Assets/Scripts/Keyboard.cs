@@ -130,6 +130,12 @@ namespace SwipeKeyboard
 
         private void UpdateHints()
         {
+            if (inputString.lastWord == "")
+            {
+                keyboardHints.RemoveAll();
+                return;
+            }
+                
             string[] suggestionWords = symSpellManager.GetSuggestions(inputString.lastWord, 4);
             keyboardHints.Create(suggestionWords);
         }

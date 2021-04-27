@@ -55,12 +55,14 @@ public class SymSpellManager
         if (suggestions.Count == 0)
             return new string[] { word };
 
-        int resultCount = suggestions.Count < count ? suggestions.Count : count;
+        int resultCount = suggestions.Count < count - 1 ? suggestions.Count : count - 1;
 
-        string[] results = new string[resultCount];
+        string[] results = new string[resultCount+1];
+
+        results[0] = word;
 
         for (int i = 0; i < resultCount; i++)
-            results[i] = suggestions[i].term;
+            results[i+1] = suggestions[i].term;
 
         return results;
     }

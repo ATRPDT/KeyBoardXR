@@ -5651,12 +5651,12 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     lifeTime: 0.5
-    trail: {fileID: 0}
   keysAnimation:
     keyPressedColor: {r: 0.39716092, g: 0.4122908, b: 0.8018868, a: 1}
     keyColorChangeSpeed: 0.01
   keyboardHints:
     hintArea: {fileID: 1838388794}
+    selectedHintColor: {r: 0.35686275, g: 0.41960785, b: 0.6784314, a: 1}
     count: 3
     offsetBetween: 5
     offsetEdge: {x: 5, y: 5}
