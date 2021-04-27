@@ -78,6 +78,7 @@ namespace SwipeKeyboard
                                         case "backspace":
                                             inputString.RemoveFromEnd(1);
                                             textBox.text = inputString.text;
+                                            UpdateHints();
                                             break;
                                     }
                                 }
@@ -87,19 +88,14 @@ namespace SwipeKeyboard
 
                                     if (button.buttonValue == " ")
                                     {
+                                        inputString.AddWord(keyboardHints.GetHintText(keyboardHints.selectedHintIndex));
                                         keyboardHints.RemoveAll();
-                                        inputString.AddWord(symSpellManager.GetSuggestion(inputString.lastWord));
-                                        //Debug.Log(spellChecker.Correct(inputString.lastWord));
                                     }
                                     else
                                     {
                                         inputString.Add(button.buttonValue);
-                                        
-                                        string[] suggestionWords = symSpellManager.GetSuggestions(inputString.lastWord, 3);
 
-                                        keyboardHints.Create(suggestionWords.Length);//Изменить
-                                        keyboardHints.SetHintTexts(suggestionWords);
-                                       
+                                        UpdateHints();
                                         
                                     }
                                     
@@ -130,6 +126,12 @@ namespace SwipeKeyboard
 
             lineTrailAnimation.UpdateTrailPosition();
             keysAnimation.UpdateSelectedImages();
+        }
+
+        private void UpdateHints()
+        {
+            string[] suggestionWords = symSpellManager.GetSuggestions(inputString.lastWord, 4);
+            keyboardHints.Create(suggestionWords);
         }
 
         private void CalculateMouseDalta()
@@ -231,15 +233,23 @@ namespace SwipeKeyboard
         public class KeyboardHints
         {
             public RectTransform hintArea;
+            public Color selectedHintColor;
             public int count;
             public float offsetBetween = 10f;
             public Vector2 offsetEdge = new Vector2(10, 10);
+            public int selectedHintIndex { get; private set; }
 
             private List<KeyboardButton> hints = new List<KeyboardButton>();
 
-            public void Create(int count)
+            public void Create(string[] hintTexts)
             {
-                this.count = count;
+                this.count = hintTexts.Length;
+
+                if (count <= 0)
+                    return;
+
+                selectedHintIndex = count > 1 ? 1 : 0;
+
                 if (hints.Count > 0) RemoveAll();
                 //Vector2 offsetPosition = new Vector2(hintArea.position.x, hintArea.position.y);
                 Vector2 hintSize = (new Vector2(hintArea.sizeDelta.x, hintArea.sizeDelta.y) - offsetEdge * 2 - new Vector2(offsetBetween * (count - 1), 0)) / new Vector2(count, 1);
@@ -256,6 +266,9 @@ namespace SwipeKeyboard
                     hintObj.GetComponent<BoxCollider>().size = new Vector3(hintSize.x, hintSize.y, 1);
                     hintObj.GetComponent<BoxCollider>().center = new Vector3(0, 0, -1);
 
+                    if (i == selectedHintIndex)
+                        hintObj.GetComponent<Image>().color = selectedHintColor;
+
                     GameObject hintText = new GameObject("Text");
                     hintText.transform.position = hintObj.transform.position;
                     hintText.transform.rotation = hintObj.transform.rotation;
@@ -268,7 +281,15 @@ namespace SwipeKeyboard
                     hintText.GetComponent<Text>().color = Color.black;
                     hintText.GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
 
-                    hints.Add(new KeyboardButton(hintObj, false, ""));
+                    string text;
+                    if (i == 0)
+                        text = "\"" + hintTexts[i] + "\"";
+                    else
+                       text =  hintTexts[i];
+
+                    hintText.GetComponent<Text>().text = text;
+
+                    hints.Add(new KeyboardButton(hintObj, false, hintTexts[i]));
                 }
             }
             public void RemoveAll()
