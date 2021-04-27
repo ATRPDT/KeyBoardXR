@@ -60,7 +60,7 @@ public class VoiceInput : MonoBehaviour
 
 			isListening = false;
 			myToggle.isOn = false;
-			checkmarkAnimation.Stop();
+			
 			//dictationRecognizer.Dispose();
 		};
 
@@ -71,8 +71,8 @@ public class VoiceInput : MonoBehaviour
 		if (!myToggle.isOn && isListening)
 		{
 			isListening = false;
+			checkmarkAnimation.Stop();
 			dictationRecognizer.Stop();
-
 			Debug.Log("12stop dispose");
 		}
 
