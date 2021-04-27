@@ -5651,6 +5651,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     lifeTime: 0.5
+    trail: {fileID: 0}
   keysAnimation:
     keyPressedColor: {r: 0.39716092, g: 0.4122908, b: 0.8018868, a: 1}
     keyColorChangeSpeed: 0.01

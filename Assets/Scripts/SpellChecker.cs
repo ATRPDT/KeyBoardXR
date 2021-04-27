@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class SpellChecker 
 {
-    HashSet<string> WORD_COUNTS = new HashSet<string>();
+    HashSet<string> wordsSet = new HashSet<string>();
     private readonly static string alphabet = "abcdefghijklmnopqrstuvwxyz";
     // Start is called before the first frame update
-    public SpellChecker() { LoadDictionary(); }
-    public void LoadDictionary()
+    public SpellChecker() { LoadWordsSet(); }
+    public void LoadWordsSet()
     {
-        WORD_COUNTS = new HashSet<string>(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishWords.txt"));
+        wordsSet = new HashSet<string>(File.ReadAllLines(Application.dataPath + @"\SwipeType\EnglishWords.txt"));
 
     }
     public List<string> EditDistance1(string word)
@@ -75,7 +75,7 @@ public class SpellChecker
     public string Correct(string word)
     {
 
-        if (WORD_COUNTS.Contains(word))
+        if (wordsSet.Contains(word))
         {
             //return new List<string>() { word };
             return word;
@@ -93,7 +93,7 @@ public class SpellChecker
         
         for (var i = 0; i < editDistance1Words.Count; i++)
         {
-            if (WORD_COUNTS.Contains(editDistance1Words[i]))
+            if (wordsSet.Contains(editDistance1Words[i]))
             {
                 correctedWord.Add(editDistance1Words[i]);
             }
@@ -101,7 +101,7 @@ public class SpellChecker
 
         for (var i = 0; i < editDistance2Words.Count; i++)
         {
-            if (WORD_COUNTS.Contains(editDistance2Words[i]))
+            if (wordsSet.Contains(editDistance2Words[i]))
             {
                 correctedWord.Add(editDistance2Words[i]);
             }

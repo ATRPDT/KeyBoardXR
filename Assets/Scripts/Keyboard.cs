@@ -36,7 +36,7 @@ namespace SwipeKeyboard
 
         private SpellChecker spellChecker;
 
-        void Start()
+        private void Start()
         {
             //swipeType = new MatchSwipeType(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishDictionary.txt"));
 
@@ -46,9 +46,9 @@ namespace SwipeKeyboard
 
             lineTrailAnimation.CreateTrailObject();
         }
-        
 
-        void FixedUpdate()
+
+        private void FixedUpdate()
         {
             CalculateMouseDalta();
 
@@ -98,9 +98,10 @@ namespace SwipeKeyboard
                                             keyboardHints.Create(suggestionWords.Length);//Изменить
                                             keyboardHints.SetHintTexts(suggestionWords);
                                         }
-                                       */ 
+                                       */
+                                        inputString.Add(button.buttonValue);
                                     }
-                                    inputString.Add(button.buttonValue);
+                                    
                                     textBox.text = inputString.text;
 
                                 }
