@@ -44,15 +44,14 @@ namespace SwipeKeyboard
             //spellChecker = new SpellChecker();
             symSpellManager = new SymSpellManager();
 
-            CalculateMouseDalta();
+            CalculateMouseDelta();
 
             lineTrailAnimation.CreateTrailObject();
         }
 
-
-        private void FixedUpdate()
+        private void Update()
         {
-            CalculateMouseDalta();
+            CalculateMouseDelta();
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -65,47 +64,46 @@ namespace SwipeKeyboard
                     KeyboardButton button = FindKeyboardButton(hit.transform.gameObject);
                     if (button != null)
                     {
-                        if (mouseDelta.sqrMagnitude < sensitivity)
-                            if ((currentKey != button.buttonObject) || !isMouseDown)
-                            {
-                                keysAnimation.AddSelectedImage(button.buttonObject.transform.gameObject.GetComponent<Image>());
+                        if ((currentKey != button.buttonObject && mouseDelta.sqrMagnitude < sensitivity) || !isMouseDown)
+                        {
+                            keysAnimation.AddSelectedImage(button.buttonObject.transform.gameObject.GetComponent<Image>());
 
-                                if (button.isCommandButton)
+                            if (button.isCommandButton)
+                            {
+                                string keyValue = button.buttonValue;//.transform.gameObject.GetComponent<KeyControl>().keyValue;
+                                switch (keyValue)
                                 {
-                                    string keyValue = button.buttonValue;//.transform.gameObject.GetComponent<KeyControl>().keyValue;
-                                    switch (keyValue)
-                                    {
-                                        case "backspace":
-                                            inputString.RemoveFromEnd(1);
-                                            textBox.text = inputString.text;
-                                            UpdateHints();
-                                            break;
-                                    }
+                                    case "backspace":
+                                        inputString.RemoveFromEnd(1);
+                                        textBox.text = inputString.text;
+                                        UpdateHints();
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                    
+
+                                if (button.buttonValue == " ")
+                                {
+                                    inputString.AddWord(keyboardHints.GetHintText(keyboardHints.selectedHintIndex));
+                                    keyboardHints.RemoveAll();
                                 }
                                 else
                                 {
-                                    
+                                    inputString.Add(button.buttonValue);
 
-                                    if (button.buttonValue == " ")
-                                    {
-                                        inputString.AddWord(keyboardHints.GetHintText(keyboardHints.selectedHintIndex));
-                                        keyboardHints.RemoveAll();
-                                    }
-                                    else
-                                    {
-                                        inputString.Add(button.buttonValue);
-
-                                        UpdateHints();
+                                    UpdateHints();
                                         
-                                    }
-                                    
-                                    textBox.text = inputString.text;
-
                                 }
+                                    
+                                textBox.text = inputString.text;
 
-                                currentKey = hit.transform.gameObject;
-                                isMouseDown = true;
                             }
+
+                            currentKey = hit.transform.gameObject;
+                            isMouseDown = true;
+                        }
                     }
                     else if (keyboardHints.GetHintIndex(hit.transform.gameObject) != -1)
                     {
@@ -122,7 +120,10 @@ namespace SwipeKeyboard
 
                 }
             }
-            if (Input.GetButtonUp("Fire1")) isMouseDown = false;
+            else
+            {
+                isMouseDown = false;
+            }
 
             lineTrailAnimation.UpdateTrailPosition();
             keysAnimation.UpdateSelectedImages();
@@ -140,7 +141,7 @@ namespace SwipeKeyboard
             keyboardHints.Create(suggestionWords);
         }
 
-        private void CalculateMouseDalta()
+        private void CalculateMouseDelta()
         {
             mouseDelta = oldMousePosition - Input.mousePosition;
             oldMousePosition = Input.mousePosition;
