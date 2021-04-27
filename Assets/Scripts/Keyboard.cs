@@ -50,7 +50,8 @@ namespace SwipeKeyboard
         }
 
 
-        private void FixedUpdate()
+			
+        private void Update()
         {
             CalculateMouseDalta();
 
