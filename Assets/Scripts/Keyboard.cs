@@ -34,13 +34,15 @@ namespace SwipeKeyboard
 
         private MatchSwipeType swipeType;
 
-        private SpellChecker spellChecker;
+        //private SpellChecker spellChecker;
+        private SymSpellManager symSpellManager;
 
         private void Start()
         {
             //swipeType = new MatchSwipeType(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishDictionary.txt"));
 
-            spellChecker = new SpellChecker();
+            //spellChecker = new SpellChecker();
+            symSpellManager = new SymSpellManager();
 
             CalculateMouseDalta();
 
@@ -86,20 +88,19 @@ namespace SwipeKeyboard
                                     if (button.buttonValue == " ")
                                     {
                                         keyboardHints.RemoveAll();
-                                        inputString.AddWord(spellChecker.Correct(inputString.lastWord));
+                                        inputString.AddWord(symSpellManager.GetSuggestion(inputString.lastWord));
                                         //Debug.Log(spellChecker.Correct(inputString.lastWord));
                                     }
                                     else
                                     {
-                                        /*
-                                        string[] suggestionWords = GetSuggestionWords(inputString.lastWord, 3);
-                                        if(suggestionWords.Length > 0 && suggestionWords[0] != "")
-                                        {
-                                            keyboardHints.Create(suggestionWords.Length);//Изменить
-                                            keyboardHints.SetHintTexts(suggestionWords);
-                                        }
-                                       */
                                         inputString.Add(button.buttonValue);
+                                        
+                                        string[] suggestionWords = symSpellManager.GetSuggestions(inputString.lastWord, 3);
+
+                                        keyboardHints.Create(suggestionWords.Length);//Изменить
+                                        keyboardHints.SetHintTexts(suggestionWords);
+                                       
+                                        
                                     }
                                     
                                     textBox.text = inputString.text;
