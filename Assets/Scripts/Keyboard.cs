@@ -24,6 +24,7 @@ namespace SwipeKeyboard
         public KeyboardHints keyboardHints;
 
         private Vector3 mouseDelta;
+        [SerializeField]
         private Vector3 oldMousePosition;
         [HideInInspector]
         public InputString inputString = new InputString();
@@ -33,7 +34,8 @@ namespace SwipeKeyboard
         private bool isMouseDown = false;
         private bool isReadyToFirstPress = true;
         private bool isfirstPressed;
-        public int timeStep;
+        public float timeStep = 0.5f;
+        public float _mouseDelta ;
         private MatchSwipeType swipeType;
 
         //private SpellChecker spellChecker;
@@ -50,25 +52,22 @@ namespace SwipeKeyboard
 
             lineTrailAnimation.CreateTrailObject();
         }
+        
+
         private void Update()
         {
+            
             CalculateMouseDelta();
+            Debug.Log(Mathf.Sqrt(mouseDelta.x* mouseDelta.x + mouseDelta.y * mouseDelta.y));
 
             if (Input.GetButtonUp("Fire1"))
             {
-                timeStep = 0;
+                timeStep = 0.5f;
                 isMouseDown = false;
                 isfirstPressed = false;
                 isReadyToFirstPress = true;
 
             }
-
-            
-        }
-
-        void FixedUpdate()
-        {
-            
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -81,17 +80,18 @@ namespace SwipeKeyboard
                     KeyboardButton button = FindKeyboardButton(hit.transform.gameObject);
                     if (button != null)
                     {
-                        if (mouseDelta.sqrMagnitude < sensitivity)
+                        if (Mathf.Sqrt(mouseDelta.x * mouseDelta.x + mouseDelta.y * mouseDelta.y) < sensitivity)
                         {
 
-                            if (timeStep % 30 == 0)
+                            if (timeStep <= 0)
                             {
+
                                 if (isfirstPressed == true)
                                 {
                                     isReadyToFirstPress = false;
                                 }
 
-                                timeStep = 0;
+                                timeStep = 0.5f;
 
 
 
@@ -113,11 +113,11 @@ namespace SwipeKeyboard
 
                             if (isfirstPressed == true && isReadyToFirstPress == true)
                             {
-                                timeStep++;
+                                timeStep -= Time.deltaTime;
                             }
                             else
                             {
-                                timeStep += 10;
+                                timeStep -= 10 * Time.deltaTime;
                             }
 
                         }
@@ -154,7 +154,7 @@ namespace SwipeKeyboard
         private void ButtonPress(KeyboardButton button)
         {
             keysAnimation.AddSelectedImage(button.buttonObject.transform.gameObject.GetComponent<Image>());
-
+            
             if (button.isCommandButton)
             {
                 string keyValue = button.buttonValue; //.transform.gameObject.GetComponent<KeyControl>().keyValue;
@@ -163,7 +163,9 @@ namespace SwipeKeyboard
                     case "backspace":
                         inputString.RemoveFromEnd(1);
                         textBox.text = inputString.text;
+                        UpdateHints();
                         break;
+
                 }
             }
             else
@@ -186,8 +188,10 @@ namespace SwipeKeyboard
                         keyboardHints.SetHintTexts(suggestionWords);
                     }
                    */
+                    inputString.Add(button.buttonValue);
+                    UpdateHints();
                 }
-                inputString.Add(button.buttonValue);
+                
                 textBox.text = inputString.text;
             }
         }
@@ -206,8 +210,9 @@ namespace SwipeKeyboard
 
         private void CalculateMouseDelta()
         {
-            mouseDelta = oldMousePosition - Input.mousePosition;
+            mouseDelta = Input.mousePosition - oldMousePosition;
             oldMousePosition = Input.mousePosition;
+            
         }
 
         private string[] GetSuggestionWords(string inputWord, int count)
