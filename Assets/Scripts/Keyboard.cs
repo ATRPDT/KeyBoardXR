@@ -11,7 +11,8 @@ namespace SwipeKeyboard
     {
         public Text textBox;
         public float sensitivity = 0.1f;
-        [Header("Кнопки на клавиатуре")]
+
+        [Header("Массив кнопок")]
         public KeyboardButton[] keyboardButtons;
 
         [Header("Анимация свайпов")]
@@ -20,22 +21,26 @@ namespace SwipeKeyboard
         [Header("Анимация клавиш")]
         public KeysAnimation keysAnimation;
 
-        [Header("Подсказки слов")]
+        [Header("Подсказки")]
         public KeyboardHints keyboardHints;
 
         private Vector3 mouseDelta;
-        [SerializeField]
-        private Vector3 oldHitPosition;
-        [HideInInspector]
-        public InputString inputString = new InputString();
+        
+        [SerializeField] private Vector3 oldHitPosition;
+        
+        [HideInInspector] public InputString inputString = new InputString();
+
         //private string currentWord = "";
         private GameObject currentKey = null;
 
         private bool isMouseDown = false;
+
         private bool isReadyToFirstPress = true;
         private bool isfirstPressed;
+        
         public float timeStep = 0.5f;
-        public float _mouseDelta ;
+        public float _mouseDelta;
+
         private MatchSwipeType swipeType;
 
         //private SpellChecker spellChecker;
@@ -43,9 +48,7 @@ namespace SwipeKeyboard
 
         private void Start()
         {
-            //swipeType = new MatchSwipeType(File.ReadAllLines(@"E:\UnityPr\KeyBoardUnited\Assets\SwipeType\EnglishDictionary.txt"));
-
-            //spellChecker = new SpellChecker();
+            
             symSpellManager = new SymSpellManager();
 
             //CalculateDelta(Vector3.zero, Vector3.zero);
@@ -158,6 +161,7 @@ namespace SwipeKeyboard
 
             else
             {
+
                 isMouseDown = false;
             }
 
@@ -178,7 +182,6 @@ namespace SwipeKeyboard
                         textBox.text = inputString.text;
                         UpdateHints();
                         break;
-
                 }
             }
             else
@@ -187,20 +190,10 @@ namespace SwipeKeyboard
                 if (button.buttonValue == " ")
                 {
                     keyboardHints.RemoveAll();
-                    //inputString.AddWord(spellChecker.Correct(inputString.lastWord));
                     inputString.AddWord(symSpellManager.GetSuggestion(inputString.lastWord));
-                    //Debug.Log(spellChecker.Correct(inputString.lastWord));
                 }
                 else
                 {
-                    /*
-                    string[] suggestionWords = GetSuggestionWords(inputString.lastWord, 3);
-                    if(suggestionWords.Length > 0 && suggestionWords[0] != "")
-                    {
-                        keyboardHints.Create(suggestionWords.Length);//Изменить
-                        keyboardHints.SetHintTexts(suggestionWords);
-                    }
-                   */
                     inputString.Add(button.buttonValue);
                     UpdateHints();
                 }
@@ -510,6 +503,11 @@ namespace SwipeKeyboard
                 Add(newText);
             }
         }
+        private class Timer
+        { 
+
+        }
+
 
     }
 
