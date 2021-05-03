@@ -38,7 +38,6 @@ public class VoiceInput : MonoBehaviour
 			//GetComponent<Keybo>
 			GetComponent<Keyboard>().inputString.Add(text + " ");
 			textField.text = GetComponent<Keyboard>().inputString.text;
-
 		};
 
 		/*
@@ -60,7 +59,7 @@ public class VoiceInput : MonoBehaviour
 
 			isListening = false;
 			myToggle.isOn = false;
-			checkmarkAnimation.Stop();
+			
 			//dictationRecognizer.Dispose();
 		};
 
@@ -71,18 +70,19 @@ public class VoiceInput : MonoBehaviour
 		if (!myToggle.isOn && isListening)
 		{
 			isListening = false;
+			checkmarkAnimation.Stop();
 			dictationRecognizer.Stop();
-
 			Debug.Log("12stop dispose");
 		}
 
 		if (myToggle.isOn && !isListening)
 		{
 			isListening = true;
-			StartRecognition(true);
+			StartRecognition();
 		}
 
 	}
+	
 	private void FixedUpdate()
 	{
 		if (isListening)
@@ -92,7 +92,7 @@ public class VoiceInput : MonoBehaviour
 
 	}
 
-	private void StartRecognition(bool arg0)
+	private void StartRecognition()
 	{
 		checkmarkAnimation.Start();
 		dictationRecognizer.Start();

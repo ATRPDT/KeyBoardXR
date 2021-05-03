@@ -5656,6 +5656,7 @@ MonoBehaviour:
     keyColorChangeSpeed: 0.01
   keyboardHints:
     hintArea: {fileID: 1838388794}
+    selectedHintColor: {r: 0.35686275, g: 0.41960785, b: 0.6784314, a: 1}
     count: 3
     offsetBetween: 5
     offsetEdge: {x: 5, y: 5}
