@@ -52,13 +52,16 @@ namespace SwipeKeyboard
 
             lineTrailAnimation.CreateTrailObject();
         }
-        
+        private void FixedUpdate()
+        {
+            CalculateMouseDelta();
+        }
 
         private void Update()
         {
             
-            CalculateMouseDelta();
-            Debug.Log(Mathf.Sqrt(mouseDelta.x* mouseDelta.x + mouseDelta.y * mouseDelta.y));
+            
+            Debug.Log(Mathf.Sqrt(mouseDelta.x * mouseDelta.x + mouseDelta.y * mouseDelta.y));
 
             if (Input.GetButtonUp("Fire1"))
             {
@@ -78,9 +81,10 @@ namespace SwipeKeyboard
                 if (Physics.Raycast(ray, out hit))
                 {
                     KeyboardButton button = FindKeyboardButton(hit.transform.gameObject);
+                    currentKey = hit.transform.gameObject;
                     if (button != null)
                     {
-                        if (Mathf.Sqrt(mouseDelta.x * mouseDelta.x + mouseDelta.y * mouseDelta.y) < sensitivity)
+                        if (mouseDelta.sqrMagnitude < sensitivity)
                         {
 
                             if (timeStep <= 0)
@@ -143,6 +147,7 @@ namespace SwipeKeyboard
                     }
                 }
             }
+
             else
             {
                 isMouseDown = false;
