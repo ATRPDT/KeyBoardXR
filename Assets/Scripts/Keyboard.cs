@@ -25,7 +25,7 @@ namespace SwipeKeyboard
 
         private Vector3 mouseDelta;
         [SerializeField]
-        private Vector3 oldMousePosition;
+        private Vector3 oldHitPosition;
         [HideInInspector]
         public InputString inputString = new InputString();
         //private string currentWord = "";
@@ -48,13 +48,21 @@ namespace SwipeKeyboard
             //spellChecker = new SpellChecker();
             symSpellManager = new SymSpellManager();
 
-            CalculateMouseDelta();
+            //CalculateDelta(Vector3.zero, Vector3.zero);
 
             lineTrailAnimation.CreateTrailObject();
         }
         private void FixedUpdate()
         {
-            CalculateMouseDelta();
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+
+            Physics.Raycast(ray, out hit);
+
+            CalculateDelta(oldHitPosition, hit.point, out mouseDelta);
+
+            oldHitPosition = hit.point;
         }
 
         private void Update()
@@ -213,11 +221,9 @@ namespace SwipeKeyboard
             keyboardHints.Create(suggestionWords);
         }
 
-        private void CalculateMouseDelta()
+        private void CalculateDelta(Vector3 oldVec, Vector3 Vec, out Vector3 delta)
         {
-            mouseDelta = Input.mousePosition - oldMousePosition;
-            oldMousePosition = Input.mousePosition;
-            
+            delta = Vec - oldVec;
         }
 
         private string[] GetSuggestionWords(string inputWord, int count)
